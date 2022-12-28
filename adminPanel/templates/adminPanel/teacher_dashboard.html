@@ -1,0 +1,682 @@
+{% load static %}
+{% load mathfilters %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Teacher</title>
+
+    <!-- Google Scripts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Bootstrap Css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{% static 'css/teacher_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+
+    <!-- jQuery 1.7.2+ or Zepto.js 1.0+ -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <!-- Magnific Popup core JS file -->
+    <script src="{% static 'js/jquery.magnific-popup.js' %}"></script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top myNavbar">
+        <a class="navbar-brand" href="#">KJCOEMR</a>
+
+        <!-- Hamburger Icon With Animation -->
+        <button class="navbar-toggler" style="outline: none; border: none;" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <svg class="ham ham6" viewBox="0 0 100 100" width="50" onclick="this.classList.toggle('active')">
+                <path class="line top"
+                    d="m 30,33 h 40 c 13.100415,0 14.380204,31.80258 6.899646,33.421777 -24.612039,5.327373 9.016154,-52.337577 -12.75751,-30.563913 l -28.284272,28.284272" />
+                <path class="line middle"
+                    d="m 70,50 c 0,0 -32.213436,0 -40,0 -7.786564,0 -6.428571,-4.640244 -6.428571,-8.571429 0,-5.895471 6.073743,-11.783399 12.286435,-5.570707 6.212692,6.212692 28.284272,28.284272 28.284272,28.284272" />
+                <path class="line bottom"
+                    d="m 69.575405,67.073826 h -40 c -13.100415,0 -14.380204,-31.80258 -6.899646,-33.421777 24.612039,-5.327373 -9.016154,52.337577 12.75751,30.563913 l 28.284272,-28.284272" />
+            </svg>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto" id="inline-popups">
+                <!-- <li class="nav-item active mx-2">
+                    <a class="nav-link" href="#">About Us <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active mx-2">
+                    <a class="nav-link" data-toggle="modal" data-target="#adminModal" href="#">Admin Login <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active mx-2">
+                    <a class="nav-link" data-toggle="modal" data-target="#devModal" href="#">Developers <span
+                            class="sr-only">(current)</span></a>
+                </li> -->
+                <li class="nav-item active mx-2 ">
+                    <!-- <a class="nav-link" href="#test-popup" data-effect="mfp-zoom-in" id="myCreate" >Create</a> -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                        Create
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <!-- PopUp
+    <div id="test-popup" class="white-popup mfp-with-anim mfp-hide">
+        {% if errormsg|length > 0 %}
+            <p id="loginErrorMsg" style="text-align: center;font-family: 'Roboto', sans-serif;display: block;color: white;border: 2px solid red;background-color: red;border-radius: 8px;">{{errormsg}}</p>
+        {% endif %}
+        <form action="{% url 'questionForm' %}" method="POST" enctype="multipart/form-data" id="myCustomForm" class="needs-validation col-12 p-0" novalidate>
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-sm-12 field">
+                    <input type="text" class="form-control" name="subjectName" id="validationSubjectName" placeholder=" "
+                        required>
+                    <label for="validationSubjectName" class="label">Subject</label>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a Subject!
+                    </div>
+                </div>
+            </div>
+
+             {% comment %} Branch and Year {% endcomment %}
+            <div class="form-row">
+              <div class="col-6 field">
+                <div class="form-group">
+                    <select class="custom-select" oninput="selectYear()" id="yearSelect" name="yearSelect" required>
+                      <option value="" disabled>Year</option>
+                      <option id="FE" value="FE"> FE </option>
+                      <option id="SE" value="SE"> SE </option>
+                      <option id="TE" value="TE"> TE </option>
+                      <option id="BE" value="BE"> BE </option>
+                    </select>
+                  <div class="invalid-feedback">Example invalid custom select feedback</div>
+                </div>
+              </div>
+              <div class="col-6 field">
+                <div class="form-group" id="branchDiv" style="display: none;">
+                    <select class="custom-select form-control-lg" name="branchSelect" required>
+                      <option value="" disabled>Branch</option>
+                      <option value="Computer"> Computer </option>
+                      <option value="Mechanical"> Mechanical </option>
+                      <option value="Civil"> Civil </option>
+                      <option value="Electrical"> Electrical </option>
+                      <option value="ENTC"> ENTC </option>
+                    </select>
+                  <div class="invalid-feedback">Example invalid custom select feedback</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-sm-6 field">
+                    <input type="tel" class="form-control" name="totalQuestions" id="validationTotalQuestions"
+                        pattern="[0-9]{1,3}" placeholder=" " required>
+                    <label for="validationTotalQuestions" class="label">Total Questions</label>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a Number!
+                    </div>
+                </div>
+                <div class="col-sm-6 field">
+                    <input type="tel" class="form-control" name="totalMarks" id="validationTotalMarks" pattern="[0-9]{1,4}"
+                        placeholder=" " required>
+                    <label for="validationTotalMarks" class="label">Total Marks</label>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                    <div class="invalid-feedback">
+                        Please enter a Number!
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-sm-12 field">
+                    <input type="tel" name="examDuration" class="form-control" id="validationDuration" pattern="[0-9]{1,4}"
+                        placeholder=" " required>
+                    <label for="validationEmail" class="label">Duration <sup>(in mins)</sup></label>
+                    <div class="invalid-feedback">
+                        Please enter Duration!
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-sm-12 field">
+                    <input type="datetime-local" id="validationStartDate" name="dateTime" placeholder=" " required>
+                    <label for="validationStartDate" class="label">Start Date</label>
+                    <div class="invalid-feedback">
+                        Please select a valid Date!
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="col-sm-12 field">
+                    <input type="number" id="validationEndStartDate" name="enddateTime" placeholder=" " required>
+                    <label for="validationEndStartDate" class="label">End in how much Hours</label>
+                    <div class="invalid-feedback">
+                        Please select a valid Date!
+                    </div>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-sm-12">
+                <input type="text" name="quiz_create_type" id="quiz_create_type" value="excel" hidden>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="create_quiz" id="manual" onchange="fun_create_quiz('manual')" value="manual">
+                    <label class="form-check-label" for="manual">
+                    Create Quiz Mannual
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="create_quiz" id="excel" onchange="fun_create_quiz('excel')" value="excel" checked>
+                    <label class="form-check-label" for="excel">
+                    Create Quiz Using Excel
+                    </label>
+                </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-sm-12" id="excel-template">
+                    <div class=" p-2" style="border: 1px solid #05386B;border-radius: 8px;">
+                        <p class="mb-0">Refer the link for the format of excel file: </p><br>
+                        <p style="color: red;"><b>Please select excel file without images. If your excel contains image please select mannual.</b></p>
+                        <a href="#">Sample Excel Template</a><br>
+
+                        <input name="file" class="mt-3" type="file" accept=".csv">
+                    </div>
+                </div>
+            </div>
+    
+            <div class="btn-container d-flex justify-content-center p-2">
+                <button id="submitBtn" type="submit" value="Register"
+                    class="btn btn-secondary ml-auto mr-auto d-flex align-items-center justify-content-center text-align-center">
+                    Create
+                    <div class="loader" style="display: none;" id="loader">
+                        <svg class="circular" viewBox="25 25 50 50">
+                            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3"
+                                stroke-miterlimit="10" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </form>
+        </form>
+    </div> -->
+
+
+
+    <!-- Main Screen -->
+    <div class="container-fluid mainscreen">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-icons ">
+
+                <div class="parentDiv">
+                    <span class="material-icons myIcon selected">
+                        analytics
+
+                    </span>
+                    <p class="mytooltip">Dashboard</p>
+                </div>
+
+                <div class="parentDiv">
+                    <span class="material-icons myIcon">
+                        restore
+                    </span>
+                    <p class="mytooltip">History</p>
+                </div>
+                <div class="parentDiv">
+                    <span class="material-icons myIcon">
+                        leaderboard
+                    </span>
+                    <p class="mytooltip">Ranking</p>
+                </div>
+                <a href="{% url 'logout' %}" class="parentDiv">
+                    <span class="material-icons myIcon">
+                        logout
+                    </span>
+                    <p class="mytooltip">Logout</p>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- Contents -->
+        <div class="contents">
+            <div class="row col-12 myRow m-0">
+                {% if tests|length > 0 %}
+
+                {% for test in tests %}
+                <div class="col-12 col-sm-10 col-md-4 col-xl-3 ml-auto mr-auto">
+                    <div class="card myCard">
+                        <div class="card-header myCardHeader pt-0 pb-0">
+                            <span class="material-icons ml-auto threeIcon">
+                                more_horiz
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <form id="formID-{{forloop.counter}}" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="card-title mb-0 grayTitle">
+                                            Subject</p>
+                                        <h5 class="mb-0">{{test.subjectName}}</h5>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-7 col-7">
+                                        <p class="card-title mb-0 grayTitle">Year - Branch
+                                        </p>
+                                        {% if test.year_field != 'FE' %}
+                                        <h5 class="mb-0" id="">{{ test.year_field }} - {{ test.branch_field }}</h5>
+                                        {% else %}
+                                        <h5 class="mb-0" id="">{{ test.year_field }}</h5>
+                                        {% endif %}
+
+                                    </div>
+                                    <div class="col-md-5 col-5">
+                                        <p class="card-title mb-0 grayTitle">
+                                            Duration</p>
+                                        <div style="display: flex;">
+                                            <h5 class="mb-0">{{test.examDuration|intdiv:60}}</h5>
+                                            <h5 class="ml-1 mb-0">min</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-7 col-7">
+                                        <p class="card-title mb-0 grayTitle">Total
+                                            Questions</p>
+                                        <h5 class="mb-0">{{test.totalQuestions}}</h5>
+                                    </div>
+                                    <div class="col-md-5 col-5">
+                                        <p class="card-title mb-0 grayTitle">Marks
+                                        </p>
+                                        <div style="display: flex;">
+                                            <h5 class="mb-0">{{test.totalMarks}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <p class="card-title mb-0 grayTitle">Date
+                                        </p>
+                                        <h5 class="mb-0">{{test.dateTime|date:"jS M, Y"}}</h5>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <p class="card-title mb-0 grayTitle">Time
+                                        </p>
+                                        <h5 class="mb-0">{{test.dateTime|date:"g:i A"}}</h5>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <p class="card-title mb-0 grayTitle">Test ends in</p>
+                                        <h5 class="mb-0">{{test.test_end_hours}} Hours</h5>
+                                    </div>
+                                </div>
+                                <div class="btn-container d-flex justify-content-center p-2 mt-2">
+                                    <input type="text" name="testIdHidden" value={{test.id}} hidden>
+                                    <input id="cardBtn-{{forloop.counter}}"
+                                        onclick="testDeletePopup(event,'cardBtn-{{forloop.counter}}','{{forloop.counter}}')"
+                                        type="button" value="Delete"
+                                        class="btn btn-secondary col-5 ml-auto mr-auto d-flex align-items-center justify-content-center text-align-center cardBtn">
+
+                                    <a href="{% url 'view_result' test.id %}">View Result</a>
+
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <p class="card-title mb-0 grayBottomTitle" aria-readonly="true">Posted On
+                                            {{test.createdOn|date:"jS F"}}</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- Animated Illustration -->
+                <div class="ml-auto mr-auto" style="width:50%;">
+                    <div id="lottie" class="ml-auto mr-auto"></div>
+                    <p class="lead text-center" style="transform: translateY(-80px);">
+                        No Test Created Yet.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Test</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% if errormsg|length > 0 %}
+                    <p id="loginErrorMsg"
+                        style="text-align: center;font-family: 'Roboto', sans-serif;display: block;color: white;border: 2px solid red;background-color: red;border-radius: 8px;">
+                        {{errormsg}}</p>
+                    {% endif %}
+                    <form action="{% url 'questionForm' %}" method="POST" enctype="multipart/form-data"
+                        id="myCustomForm" class="needs-validation col-12 p-0" novalidate>
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="col-sm-12 field">
+                                <input type="text" class="form-control" name="subjectName" id="validationSubjectName"
+                                    placeholder=" " required>
+                                <label for="validationSubjectName" class="label">Subject</label>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a Subject!
+                                </div>
+                            </div>
+                        </div>
+
+                        {% comment %} Branch and Year {% endcomment %}
+                        <div class="form-row">
+                            <div class="col-6 field">
+                                <div class="form-group">
+                                    <select class="custom-select" oninput="selectYear()" id="yearSelect"
+                                        name="yearSelect" required>
+                                        <option value="" disabled>Year</option>
+                                        <option id="FE" value="FE"> FE </option>
+                                        <option id="SE" value="SE"> SE </option>
+                                        <option id="TE" value="TE"> TE </option>
+                                        <option id="BE" value="BE"> BE </option>
+                                    </select>
+                                    <div class="invalid-feedback">Example invalid custom select feedback</div>
+                                </div>
+                            </div>
+                            <div class="col-6 field">
+                                <div class="form-group" id="branchDiv" style="display: none;">
+                                    <select class="custom-select form-control-lg" name="branchSelect" required>
+                                        <option value="" disabled>Branch</option>
+                                        <option value="Computer"> Computer </option>
+                                        <option value="Mechanical"> Mechanical </option>
+                                        <option value="Civil"> Civil </option>
+                                        <option value="Electrical"> Electrical </option>
+                                        <option value="ENTC"> ENTC </option>
+                                    </select>
+                                    <div class="invalid-feedback">Example invalid custom select feedback</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-sm-6 field">
+                                <input type="tel" class="form-control" name="totalQuestions"
+                                    id="validationTotalQuestions" pattern="[0-9]{1,3}" placeholder=" " required>
+                                <label for="validationTotalQuestions" class="label">Total Questions</label>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a Number!
+                                </div>
+                            </div>
+                            <div class="col-sm-6 field">
+                                <input type="tel" class="form-control" name="totalMarks" id="validationTotalMarks"
+                                    pattern="[0-9]{1,4}" placeholder=" " required>
+                                <label for="validationTotalMarks" class="label">Total Marks</label>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please enter a Number!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-12 field">
+                                <input type="tel" name="examDuration" class="form-control" id="validationDuration"
+                                    pattern="[0-9]{1,4}" placeholder=" " required>
+                                <label for="validationEmail" class="label">Duration <sup>(in mins)</sup></label>
+                                <div class="invalid-feedback">
+                                    Please enter Duration!
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-12 field">
+                                <input type="datetime-local" id="validationStartDate" name="dateTime" placeholder=" "
+                                    required>
+                                <label for="validationStartDate" class="label">Start Date</label>
+                                <div class="invalid-feedback">
+                                    Please select a valid Date!
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-sm-12 field">
+                                <input type="number" id="validationEndStartDate" name="enddateTime" placeholder=" "
+                                    required>
+                                <label for="validationEndStartDate" class="label">End in how much Hours</label>
+                                <div class="invalid-feedback">
+                                    Please select a valid Date!
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-12">
+                                <input type="text" name="quiz_create_type" id="quiz_create_type" value="excel" hidden>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="create_quiz" id="manual"
+                                        onchange="fun_create_quiz('manual')" value="manual">
+                                    <label class="form-check-label" for="manual">
+                                        Create Quiz Mannual
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="create_quiz" id="excel"
+                                        onchange="fun_create_quiz('excel')" value="excel" checked>
+                                    <label class="form-check-label" for="excel">
+                                        Create Quiz Using Excel
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-12" id="excel-template">
+                                <div class=" p-2" style="border: 1px solid #05386B;border-radius: 8px;">
+                                    <p class="mb-0">Refer the link for the format of excel file: </p><br>
+                                    <p style="color: red;"><b>Please select excel file without images. If your excel
+                                            contains image please select mannual.</b></p>
+                                    <a href="#">Sample Excel Template</a><br>
+
+                                    <input name="file" class="mt-3" type="file" accept=".csv">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="btn-container d-flex justify-content-center p-2">
+                            <button id="submitBtn" type="submit" value="Register"
+                                class="btn btn-secondary ml-auto mr-auto d-flex align-items-center justify-content-center text-align-center">
+                                Create
+                                <div class="loader" style="display: none;" id="loader">
+                                    <svg class="circular" viewBox="25 25 50 50">
+                                        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3"
+                                            stroke-miterlimit="10" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Lottie Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"
+        integrity="sha512-m0RQU4SBx0p/bLwRiI4fJBGRafVLZ4s86wRe1+OAx5EXbcWiS/X1jvYdJQRD8jOoIVl+WTyVeMawUWVCh1O8+Q=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"
+        integrity="sha512-m0RQU4SBx0p/bLwRiI4fJBGRafVLZ4s86wRe1+OAx5EXbcWiS/X1jvYdJQRD8jOoIVl+WTyVeMawUWVCh1O8+Q=="
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        function fun_create_quiz(type) {
+            if (type == 'excel') {
+                document.getElementById('excel-template').style.display = 'block';
+                document.getElementById('quiz_create_type').value = type;
+            }
+            else {
+                document.getElementById('excel-template').style.display = 'none';
+                document.getElementById('quiz_create_type').value = type;
+            }
+        }
+
+    </script>
+
+    <script>
+        var animation = bodymovin.loadAnimation({
+            container: document.getElementById('lottie'), // Required
+            path: "/static/js/nodata.json", // Required
+            renderer: 'svg', // Required
+            loop: true, // Optional
+            autoplay: true, // Optional
+            name: "Hello World", // Name for future reference. Optional.
+        });
+
+    </script>
+
+    <!-- Auto Submit Script -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Random color script for test card headers -->
+    <script>
+        window.onload = function () {
+            var listOfColors = ['#F2EA02', '#FF3300', '#00FF66', '#0062FF', '#FF0099', '#6E0DD0'];
+            var cardHeaders = document.getElementsByClassName("myCardHeader");
+            var cardBtns = document.getElementsByClassName("cardBtn");
+            for (let i = 0; i < cardHeaders.length; i++) {
+                let randomNumber = Math.floor(Math.random() * 6);
+                cardHeaders[i].style.backgroundColor = listOfColors[randomNumber];
+                cardBtns[i].style.backgroundColor = listOfColors[randomNumber];
+            }
+        };
+    </script>
+
+
+    <script>
+        function selectYear() {
+            var select = document.getElementById("yearSelect")
+            var branch = document.getElementById("branchDiv")
+
+            if (select.value == 'FE') {
+                branch.style.display = "none"
+            }
+            else {
+                branch.style.display = "block"
+            }
+
+        }
+
+        function testDeletePopup(e, del_id, counter) {
+            e.preventDefault();
+            var form = $('#formID-' + counter);
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                    )
+                    window.setTimeout(function submitForm() {
+                        form.submit();
+                    }, 2000)
+                    window.close()
+                }
+            })
+        }
+
+    </script>
+
+
+    <!-- Popup Scripts -->
+    <script src="../../../static/js/popup.js"></script>
+
+    <!-- Bootstrap Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+        integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+        var show_test_createquiz = '{{show_test_createquiz}}';
+        if (show_test_createquiz == 'True') {
+            $("#exampleModal").modal('show');
+        }
+    </script>
+</body>
+
+</html>
